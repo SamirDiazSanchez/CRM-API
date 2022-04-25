@@ -1,7 +1,7 @@
 import { apiMiddleware } from "middlewares/api.middleware";
 
 const handler = (req, res) => {
-	if (res.get()) {
+	if (req.get()) {
 		res.status(200).json({ message: 'success' });
 	}
 }

@@ -1,6 +1,6 @@
 export const apiMiddleware = (handler) => {
 	return (req, res) => {
-		res.get = () => {
+		req.get = () => {
 			if (req.method !== 'GET') {
 				res
 					.status(401)
@@ -13,7 +13,7 @@ export const apiMiddleware = (handler) => {
 			}
 		}
 
-		res.post = (callback) => {
+		req.post = (callback) => {
 			if (req.method !== 'POST') {
 				res
 					.status(405)
@@ -26,7 +26,7 @@ export const apiMiddleware = (handler) => {
 			}
 		}
 
-		res.put = (callback) => {
+		req.put = (callback) => {
 			if (req.method !== 'PUT') {
 				res
 					.status(405)
@@ -39,7 +39,7 @@ export const apiMiddleware = (handler) => {
 			}
 		}
 
-		res.del = (callback) => {
+		req.del = (callback) => {
 			if (req.method !== 'DELETE') {
 				res
 					.status(405)
