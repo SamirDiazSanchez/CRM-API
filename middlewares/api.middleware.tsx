@@ -1,34 +1,54 @@
 export const apiMiddleware = (handler) => {
 	return (req, res) => {
-		req.get = () => {
+		res.get = () => {
 			if (req.method !== 'GET') {
-				return res
-					.status(405)
-					.json({ response: 'Method not allowed' });
+				res
+					.status(401)
+					.json({
+						response: 'Method not allowed'
+					});
+			}
+			else {
+				return true;
 			}
 		}
 
-		req.post = () => {
+		res.post = (callback) => {
 			if (req.method !== 'POST') {
-				return res
+				res
 					.status(405)
-					.json({ response: 'Method not allowed' });
+					.json({
+						response: 'Method not allowed'
+					});
+			}
+			else {
+				return true;
 			}
 		}
 
-		req.put = () => {
+		res.put = (callback) => {
 			if (req.method !== 'PUT') {
-				return res
+				res
 					.status(405)
-					.json({ response: 'Method not allowed' });
+					.json({
+						response: 'Method not allowed'
+					});
+			}
+			else {
+				return true;
 			}
 		}
 
-		req.del = () => {
+		res.del = (callback) => {
 			if (req.method !== 'DELETE') {
-				return res
+				res
 					.status(405)
-					.json({ response: 'Method not allowed' });
+					.json({
+						response: 'Method not allowed'
+					});
+			}
+			else {
+				return true;
 			}
 		}
 
