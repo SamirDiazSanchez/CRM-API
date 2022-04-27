@@ -9,13 +9,7 @@ const handler = (req, res) => {
 				const clients = [];
 
 				const response = await notion.databases.query({
-					database_id: process.env.NOTION_CLIENT_DB,
-					filter: {
-						property: 'Active',
-						checkbox: {
-							equals: true
-						}
-					}
+					database_id: process.env.NOTION_CLIENT_DB
 				});
 
 				response.results.map((item: any) => {
@@ -24,7 +18,8 @@ const handler = (req, res) => {
 						name: item.properties.Name.title[0].text.content,
 						lastName: item.properties['Last Name'].rich_text[0].text.content,
 						phone: item.properties.Phone.phone_number,
-						email: item.properties.Email.email
+						email: item.properties.Email.email,
+						Active: item.properties.Active.checkbox
 					}
 
 					clients.push(client);
