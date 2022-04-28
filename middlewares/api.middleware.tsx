@@ -71,7 +71,7 @@ export const apiMiddleware = (handler) => {
 						.json({ error });
 				}
 
-				callback();
+				callback(authData);
 			});
 		}		
 

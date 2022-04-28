@@ -3,7 +3,7 @@ import { Client } from '@notionhq/client';
 
 const handler = async (req, res) => {
 	if (req.put()) {
-		req.jwtVerify(async () => {
+		req.jwtVerify(async (authData) => {
 			try {
 				const notion = new Client({ auth: process.env.NOTION_API_KEY});
 	
@@ -35,7 +35,11 @@ const handler = async (req, res) => {
 							phone_number: req.body.phone
 						},
 						modifyUser: {
-							email: "samir.diaz.1206@gmail.com"
+							relation: [
+								{
+									id: authData.id
+								}
+							]
 						}
 					}
 				});

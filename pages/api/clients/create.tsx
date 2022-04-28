@@ -3,7 +3,7 @@ import { apiMiddleware } from "middlewares/api.middleware";
 
 const handler = (req, res) => {
 	if (req.post()) {
-		req.jwtVerify(async () => {
+		req.jwtVerify(async (authData) => {
 			try {
 				const notion = new Client({ auth: process.env.NOTION_API_KEY});
 	
@@ -37,7 +37,11 @@ const handler = (req, res) => {
 							phone_number: req.body.phone
 						},
 						createdUser: {
-							email: "samir.diaz.1206@gmail.com"
+							relation: [
+								{
+									id: authData.id
+								}
+							]
 						},
 						Active: {
 							checkbox: true

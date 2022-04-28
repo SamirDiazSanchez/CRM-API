@@ -2,7 +2,7 @@ import { apiMiddleware } from "middlewares/api.middleware";
 import { Client } from '@notionhq/client';
 
 const handler = async (req, res) => {
-	if (req.del()) {
+	if (req.put()) {
 		req.jwtVerify(async (authData) => {
 			try {
 				const notion = new Client({ auth: process.env.NOTION_API_KEY});
@@ -11,7 +11,7 @@ const handler = async (req, res) => {
 					page_id: req.body.id,
 					properties: {
 						Active: {
-							checkbox: false
+							checkbox: true
 						},
 						modifyUser: {
 							relation: [
