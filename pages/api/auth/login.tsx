@@ -39,8 +39,8 @@ const handler = async (req, res) => {
 						.json({ errorMessage: 'Bad Login' })
 				}
 
-				sign(userData, process.env.SECRET_KEY, { expiresIn: '300s' }, (err, token) => {
-					// sign(userData, process.env.SECRET_KEY, (err, token) => {
+				// sign(userData, process.env.SECRET_KEY, { expiresIn: '300s' }, (err, token) => {
+					sign(userData, process.env.SECRET_KEY, (err, token) => {
 					res
 						.status(200)
 						.json({

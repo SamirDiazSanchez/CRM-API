@@ -49,7 +49,6 @@ const handler = (req, res) => {
 					.json(clients);
 			}
 			catch (error) {
-				console.log(error)
 				res
 					.status(400)
 					.json({ error });
