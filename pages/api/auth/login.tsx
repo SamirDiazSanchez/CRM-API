@@ -1,6 +1,7 @@
 import { sign } from 'jsonwebtoken';
 import { Client } from '@notionhq/client';
 import { compare } from 'bcryptjs';
+import { request } from 'http';
 
 const handler = async (req, res) => {
 		if (req.method !== 'POST') {
@@ -13,14 +14,30 @@ const handler = async (req, res) => {
 			const noiton = new Client({ auth: process.env.NOTION_API_KEY });
 
 			const response = await noiton.databases.query({
-				database_id: process.env.NOTION_USERS_DB,
+				database_id: process.env.NOTION_USER_DB,
 				filter: {
-					property: 'UserName',
-					title: {
-						equals: req.body.userName
-					}
+					and: [
+						{
+							property: 'UserName',
+							title: {
+								equals: req.body.userName
+							}
+						},
+						{
+							property: 'Active',
+							checkbox: {
+								equals: true
+							}
+						}
+					]
 				}
 			});
+
+			if (response.results.length === 0) {
+				return res
+					.status(403)
+					.json({ message: 'Forbidden' });
+			}
 
 			const comparation = await compare(req.body.password, response.results[0]['properties'].Password.rich_text[0].plain_text);
 
@@ -46,7 +63,7 @@ const handler = async (req, res) => {
 				rol: response.results[0]['properties'].Rol.select.name
 			}
 
-			const token = sign(userData, process.env.SECRET_KEY, { expiresIn: '15s' });
+			const token = sign(userData, process.env.SECRET_KEY, { expiresIn: '3600s' });
 			const token_refresh = sign(userAuth, process.env.SECRET_KEY_REFRESH, { expiresIn: '3600s' });
 
 			res

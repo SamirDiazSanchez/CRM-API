@@ -71,7 +71,7 @@ const handler = (req, res) => {
 
 			res
 				.status(201)
-				.json({response});
+				.json({ message: 'Created' });
 		} catch (error) {
 			res
 				.status(400)

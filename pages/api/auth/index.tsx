@@ -26,7 +26,7 @@ const handler = (req, res) => {
 
 		try {
 			const response = await noiton.databases.query({
-				database_id: process.env.NOTION_USERS_DB,
+				database_id: process.env.NOTION_USER_DB,
 				filter: {
 					property: 'UserName',
 					title: {

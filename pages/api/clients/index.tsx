@@ -62,16 +62,16 @@ const handler = (req, res) => {
 
 				clients.push(client);
 			});
+
+			res
+				.status(200)
+				.json(clients);
 		}
 		catch (error) {
 			return res
 				.status(400)
 				.json({ message: "Smetisomething goes wrong" });
 		}
-
-		res
-			.status(200)
-			.json(clients);
 	});
 }
 

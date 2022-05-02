@@ -70,12 +70,12 @@ const handler = (req, res) => {
 
 			res
 				.status(201)
-				.json({ response });
+				.json({ message: 'Created' });
 		}
 		catch (error) {
 			res
 				.status(400)
-				.json({ error });
+				.json({ message: "Smetisomething goes wrong" });
 		}
 	});
 }
