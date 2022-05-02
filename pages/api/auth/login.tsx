@@ -4,8 +4,8 @@ import { compare } from 'bcryptjs';
 import NextCors from 'nextjs-cors';
 
 const handler = async (req, res) => {
-	await NextCors(req, res, { origin: '*' });
-	
+	res.setHeader('Access-Control-Allow-Origin', '*')
+
 	if (req.method !== 'POST') {
 		return res
 			.status(405)
