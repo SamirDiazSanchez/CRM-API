@@ -38,7 +38,7 @@ const handler = async (req, res) => {
 		if (response.results.length === 0) {
 			return res
 				.status(403)
-				.json({ message: 'Forbidden' });
+				.json({ message: 'User not found' });
 		}
 
 		const comparation = await compare(req.body.password, response.results[0]['properties'].Password.rich_text[0].plain_text);
@@ -46,7 +46,7 @@ const handler = async (req, res) => {
 		if (!comparation) {
 			return res
 				.status(403)
-				.json({ message: 'Forbidden' });
+				.json({ message: 'Password is wrong' });
 		}
 
 		const userData = {
