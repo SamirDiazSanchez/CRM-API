@@ -1,7 +1,6 @@
 import { sign } from 'jsonwebtoken';
 import { Client } from '@notionhq/client';
 import { compare } from 'bcryptjs';
-import { request } from 'http';
 
 const handler = async (req, res) => {
 		if (req.method !== 'POST') {
