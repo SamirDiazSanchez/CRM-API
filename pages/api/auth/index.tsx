@@ -54,14 +54,10 @@ const handler = (req, res) => {
 				.status(200)
 				.json({ token, authData });
 		} catch (error) {
-			res
+			return res
 				.status(400)
-				.json({ error });
+				.json({ message: "Something goes wrong" });
 		}
-
-		res
-			.status(200)
-			.json({ authData });
 	});
 }
 

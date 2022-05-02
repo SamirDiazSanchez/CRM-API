@@ -55,7 +55,7 @@ const handler = async (req, res) => {
 		catch(error) {
 			res
 				.status(error.status)
-				.json({ message: "Smetisomething goes wrong" });
+				.json({ message: "Something goes wrong" });
 		}
 	});
 }

@@ -70,7 +70,7 @@ const handler = (req, res) => {
 		catch (error) {
 			return res
 				.status(400)
-				.json({ message: "Smetisomething goes wrong" });
+				.json({ message: "Something goes wrong" });
 		}
 	});
 }
