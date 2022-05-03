@@ -1,8 +1,11 @@
 import { sign, verify } from 'jsonwebtoken';
 import { Client } from '@notionhq/client';
 import { compare } from 'bcryptjs';
+import NextCors from 'nextjs-cors';
 
-const handler = (req, res) => {
+const handler = async (req, res) => {
+	await NextCors(req, res, { origin: '*' });
+
 	if (req.method !== 'POST') {
 		return res
 			.status(405)
