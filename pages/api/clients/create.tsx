@@ -1,7 +1,10 @@
 import { Client } from '@notionhq/client';
 import { verify } from 'jsonwebtoken';
+import NextCors from 'nextjs-cors';
 
-const handler = (req, res) => {
+const handler = async (req, res) => {
+	await NextCors(req, res, { origin: '*' });
+
 	if (req.method !== 'POST') {
 		return res
 			.status(405)
