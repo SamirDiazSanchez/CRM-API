@@ -51,11 +51,23 @@ const handler = async (req, res) => {
 				rol: response.results[0]['properties'].Rol.select.name
 			}
 
-			const token = sign(userData, process.env.SECRET_KEY, { expiresIn: '15s' });
+			const loginData = {
+				userName: authData.userName,
+				password: authData.password
+			}
+
+			const user = {
+				fullName: response.results[0]['properties']['Full Name'].rich_text[0].plain_text,
+				email: response.results[0]['properties'].Email.email,
+				rol: response.results[0]['properties'].Rol.select.name
+			}
+
+			const token = sign(userData, process.env.SECRET_KEY, { expiresIn: '180s' });
+			const token_refresh = sign(loginData, process.env.SECRET_KEY_REFRESH, { expiresIn: '3600s' });
 
 			res
 				.status(200)
-				.json({ token, authData });
+				.json({ token, token_refresh, user });
 		} catch (error) {
 			return res
 				.status(400)
