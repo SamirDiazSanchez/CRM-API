@@ -62,8 +62,8 @@ const handler = async (req, res) => {
 				rol: response.results[0]['properties'].Rol.select.name
 			}
 
-			const token = sign(userData, process.env.SECRET_KEY, { expiresIn: '180s' });
-			const token_refresh = sign(loginData, process.env.SECRET_KEY_REFRESH, { expiresIn: '3600s' });
+			const token = sign(userData, process.env.SECRET_KEY, { expiresIn: '300s' });
+			const token_refresh = sign(loginData, process.env.SECRET_KEY_REFRESH, { expiresIn: '1800s' });
 
 			res
 				.status(200)

@@ -5,7 +5,7 @@ import NextCors from 'nextjs-cors';
 const handler = async (req, res) => {
 	await NextCors(req, res, { origin: '*' });
 
-	if (req.method !== 'DELETE') {
+	if (req.method !== 'PUT') {
 		return res
 			.status(405)
 			.json({ messaeg: 'Method not allowed' });
