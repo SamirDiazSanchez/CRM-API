@@ -1,5 +1,6 @@
 import { Client } from '@notionhq/client';
 import { verify } from 'jsonwebtoken';
+import { ClientModel } from 'models/clientModel';
 import NextCors from 'nextjs-cors';
 
 const handler = async (req, res) => {
@@ -27,7 +28,7 @@ const handler = async (req, res) => {
 		}
 
 		const notion = new Client({ auth : process.env.NOTION_API_KEY });
-		const clients = [];
+		const clients: ClientModel[] = [];
 
 		const rol = authData.rol;
 
@@ -54,7 +55,7 @@ const handler = async (req, res) => {
 			const response = await notion.databases.query(dataQuery);
 
 			response.results.map((item: any) => {
-				const client = {
+				const client: ClientModel = {
 					id: item.id,
 					name: item.properties.Name.title[0].text.content,
 					lastName: item.properties['Last Name'].rich_text[0].text.content,

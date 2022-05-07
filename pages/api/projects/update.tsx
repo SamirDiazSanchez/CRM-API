@@ -1,5 +1,6 @@
 import { Client } from '@notionhq/client';
 import { verify } from 'jsonwebtoken';
+import { ProjectModel } from 'models/projectModel';
 import NextCors from 'nextjs-cors';
 
 const handler = async (req, res) => {
@@ -16,7 +17,7 @@ const handler = async (req, res) => {
 			.json({ message: 'Forbidden' });
 	}
 
-	const token = req.headers.authorization.split(" ")[0];
+	const token = req.headers.authorization.split(" ")[1];
 
 	verify(token, process.env.SECRET_KEY, async (error, authData) => {
 		if (error) {
@@ -33,15 +34,17 @@ const handler = async (req, res) => {
 				.json({ message: 'Unauthorized' });
 		}
 
+		const project: ProjectModel = req.body;
+
 		try {
-			const response = await notion.pages.update({
-				page_id: req.body.id,
+			await notion.pages.update({
+				page_id: project.id,
 				properties: {
-					"Project Name": {
+					Name: {
 						title: [
 							{
 								text: {
-									content: req.body.projectName
+									content: project.name
 								}
 							}
 						]
@@ -50,7 +53,7 @@ const handler = async (req, res) => {
 						rich_text: [
 							{
 								text: {
-									content: req.body.description
+									content: project.description
 								}
 							}
 						]
@@ -58,7 +61,7 @@ const handler = async (req, res) => {
 					Client: {
 						relation: [
 							{
-								id: req.body.client
+								id: project.client
 							}
 						]
 					},
@@ -74,11 +77,11 @@ const handler = async (req, res) => {
 
 			res
 				.status(200)
-				.json({ response });
+				.json({ message: 'Project update success' });
 		} catch (error) {
 			res
 				.status(400)
-				.json({ message: "Something goes wrong" });
+				.json({ message: error ? error : "Something goes wrong" });
 		}
 	});
 }

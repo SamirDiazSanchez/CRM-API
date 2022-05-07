@@ -2,6 +2,7 @@ import { Client } from "@notionhq/client";
 import { verify } from "jsonwebtoken";
 import { hash } from "bcryptjs";
 import NextCors from 'nextjs-cors';
+import { UserModel } from "models/userModel";
 
 const handler = async (req, res) => {
 	await NextCors(req, res, { origin: '*' });
@@ -34,17 +35,19 @@ const handler = async (req, res) => {
 
 		const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
-		const password = await hash(req.body.password, 8);
+		const user: UserModel = req.body;
+
+		const password = await hash(user.password, 8);
 
 		try {
-			const response = await notion.pages.update({
-				page_id: req.body.id,
+			await notion.pages.update({
+				page_id: user.id,
 				properties: {
 					UserName: {
 						title: [
 							{
 								text: {
-									content: req.body.userName
+									content: user.userName
 								}
 							}
 						]
@@ -53,17 +56,17 @@ const handler = async (req, res) => {
 						rich_text: [
 							{
 								text: {
-									content: req.body.fullName
+									content: user.fullName
 								}
 							}
 						]
 					},
 					Email: {
-						email: req.body.email
+						email: user.email
 					},
 					Rol: {
 						select: {
-							name: req.body.rol
+							name: user.rol
 						}
 					},
 					Password: {
@@ -86,12 +89,15 @@ const handler = async (req, res) => {
 						checkbox: true
 					}
 				}
-			})
+			});
 
-		} catch (error) {
 			res
+				.status(200)
+				.json({ message: 'User update success' });
+		} catch (error) {
+			return res
 				.status(400)
-				.json({ message: "Something goes wrong" });
+				.json({ message: error ? error : "Something goes wrong" });
 		}
 	})
 }

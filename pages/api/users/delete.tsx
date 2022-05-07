@@ -1,5 +1,6 @@
 import { Client } from "@notionhq/client";
 import { verify } from "jsonwebtoken";
+import { UserModel } from "models/userModel";
 import NextCors from 'nextjs-cors';
 
 const handler = async (req, res) => {
@@ -33,9 +34,11 @@ const handler = async (req, res) => {
 
 		const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
+		const user: UserModel = req.body;
+
 		try {
-			const response = await notion.pages.update({
-				page_id: req.body.id,
+			await notion.pages.update({
+				page_id: user.id,
 				properties: {
 					ModifyUser: {
 						relation: [
@@ -48,12 +51,16 @@ const handler = async (req, res) => {
 						checkbox: false
 					}
 				}
-			})
+			});
+
+			res
+				.status(200)
+				.json({ message: 'User remove success' });
 
 		} catch (error) {
-			res
+			return res
 				.status(400)
-				.json({ message: "Something goes wrong" });
+				.json({ message: error ? error : "Something goes wrong" });
 		}
 	})
 }

@@ -1,5 +1,6 @@
 import { Client } from '@notionhq/client';
 import { verify } from 'jsonwebtoken';
+import { ClientModel } from 'models/clientModel';
 import NextCors from 'nextjs-cors';
 
 const handler = async (req, res) => {
@@ -32,17 +33,19 @@ const handler = async (req, res) => {
 				.json({ message: 'Unauthorized' });
 		}
 
+		const client: ClientModel = req.body;
+
 		try {
 			const notion = new Client({ auth: process.env.NOTION_API_KEY});
 
-			const response = await notion.pages.update({
-				page_id: req.body.id,
+			await notion.pages.update({
+				page_id: client.id,
 				properties: {
 					Name: {
 						title: [
 							{
 								text: {
-									content: req.body.name
+									content: client.name
 								}
 							}
 						]
@@ -51,16 +54,16 @@ const handler = async (req, res) => {
 						rich_text: [
 							{
 								text: {
-									content: req.body.lastName
+									content: client.lastName
 								}
 							}
 						]
 					},
 					Email: {
-						email: req.body.email
+						email: client.email
 					},
 					Phone: {
-						phone_number: req.body.phone
+						phone_number: client.phone
 					},
 					modifyUser: {
 						relation: [
@@ -77,7 +80,7 @@ const handler = async (req, res) => {
 
 			res
 				.status(200)
-				.json({ response });
+				.json({ message: 'Client udpate success' });
 		}
 		catch (error) {
 			res

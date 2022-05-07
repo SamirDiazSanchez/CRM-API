@@ -2,6 +2,9 @@ import { sign, verify } from 'jsonwebtoken';
 import { Client } from '@notionhq/client';
 import { compare } from 'bcryptjs';
 import NextCors from 'nextjs-cors';
+import { LoginModel } from 'models/loginModel';
+import { UserModel } from 'models/userModel';
+import { AuthModel } from 'models/authModel';
 
 const handler = async (req, res) => {
 	await NextCors(req, res, { origin: '*' });
@@ -22,7 +25,7 @@ const handler = async (req, res) => {
 		if (error) {
 			return res
 				.status(401)
-				.json({ error });
+				.json({ message: error.message });
 		}
 		
 		const noiton = new Client({ auth: process.env.NOTION_API_KEY });
@@ -46,28 +49,33 @@ const handler = async (req, res) => {
 					.json({ message: 'Forbidden' });
 			}
 
-			const userData = {
-				id: response.results[0].id,
-				rol: response.results[0]['properties'].Rol.select.name
-			}
-
-			const loginData = {
+			const loginData: LoginModel = {
 				userName: authData.userName,
 				password: authData.password
 			}
 
-			const user = {
+			const user: UserModel = {
+				id: response.results[0].id,
+				userName: response.results[0]['properties'].UserName.title[0].plain_text,
+				password: null,
 				fullName: response.results[0]['properties']['Full Name'].rich_text[0].plain_text,
 				email: response.results[0]['properties'].Email.email,
-				rol: response.results[0]['properties'].Rol.select.name
+				rol: response.results[0]['properties'].Rol.select.nameauthData,
+				active: response.results[0]['properties'].Active.checkbox
 			}
 
-			const token = sign(userData, process.env.SECRET_KEY, { expiresIn: '300s' });
-			const token_refresh = sign(loginData, process.env.SECRET_KEY_REFRESH, { expiresIn: '1800s' });
+			const token = sign(user, process.env.SECRET_KEY, { expiresIn: '15s' });
+			const refresh_token = sign(loginData, process.env.SECRET_KEY_REFRESH, { expiresIn: '1800s' });
+
+			const auth: AuthModel = {
+				token,
+				refresh_token,
+				user
+			}
 
 			res
 				.status(200)
-				.json({ token, token_refresh, user });
+				.json(auth);
 		} catch (error) {
 			return res
 				.status(400)

@@ -1,6 +1,7 @@
 import { Client } from "@notionhq/client";
 import { hash } from "bcryptjs";
 import { verify } from "jsonwebtoken";
+import { UserModel } from "models/userModel";
 import NextCors from 'nextjs-cors';
 
 const handler = async (req, res) => {
@@ -34,10 +35,12 @@ const handler = async (req, res) => {
 
 		const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
-		const password = await hash(req.body.password, 8);
+		const user: UserModel = req.body;
+
+		const password = await hash(user.password, 8);
 
 		try {
-			const response = await notion.pages.create({
+			await notion.pages.create({
 				parent: {
 					database_id: process.env.NOTION_USER_DB
 				},
@@ -46,7 +49,7 @@ const handler = async (req, res) => {
 						title: [
 							{
 								text: {
-									content: req.body.userName
+									content: user.userName
 								}
 							}
 						]
@@ -55,17 +58,17 @@ const handler = async (req, res) => {
 						rich_text: [
 							{
 								text: {
-									content: req.body.fullName
+									content: user.fullName
 								}
 							}
 						]
 					},
 					Email: {
-						email: req.body.email
+						email: user.email
 					},
 					Rol: {
 						select: {
-							name: req.body.rol
+							name: user.rol
 						}
 					},
 					Password: {
@@ -92,12 +95,12 @@ const handler = async (req, res) => {
 
 			res
 				.status(201)
-				.json({ message: 'Created' });
+				.json({ message: 'Created success' });
 		}
 		catch (error) {
 			res
 				.status(400)
-				.json({ message: "Something goes wrong" });
+				.json({ message: error ? error : "Something goes wrong" });
 		}
 	});
 }

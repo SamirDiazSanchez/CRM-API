@@ -1,5 +1,6 @@
 import { Client } from "@notionhq/client";
 import { verify } from "jsonwebtoken";
+import { UserModel } from "models/userModel";
 import NextCors from 'nextjs-cors';
 
 const handler = async (req, res) => {
@@ -32,7 +33,7 @@ const handler = async (req, res) => {
 		}
 
 		const notion = new Client({ auth: process.env.NOTION_API_KEY });
-		const users = [];
+		const users: UserModel[] = [];
 		let query;
 
 		if (authData.rol === 'Super Admin') {
@@ -52,30 +53,33 @@ const handler = async (req, res) => {
 			}
 		}
 
+		let response;
+
 		try {
-			const response = await notion.databases.query(query);
-
-			response.results.map((item: any) => {
-				const user = {
-					id:  item.id,
-					userName: item.properties.UserName.title[0].plain_text,
-					fullName: item.properties['Full Name'].rich_text[0].plain_text,
-					email: item.properties.Email.email,
-					rol: item.properties.Rol.select.name,
-					ative: item.properties.Active.checkbox
-				}
-
-				users.push(user);
-			});
-
-			res
-				.status(200)
-				.json(users);
+			response = await notion.databases.query(query);
 		} catch(error) {
 			return res
 				.status(400)
-				.json({ message: "Something goes wrong" });
+				.json({ message: error ? error : "Something goes wrong" });
 		}
+
+		response.results.map((item: any) => {
+			const user: UserModel = {
+				id: item.id,
+				userName: item.properties.UserName.title[0].plain_text,
+				fullName: item.properties['Full Name'].rich_text[0].plain_text,
+				password: null,
+				email: item.properties.Email.email,
+				rol: item.properties.Rol.select.name,
+				active: item.properties.Active.checkbox
+			}
+
+			users.push(user);
+		});
+
+		res
+			.status(200)
+			.json(users);
 	});
 }
 

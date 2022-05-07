@@ -1,9 +1,11 @@
 import { Client } from '@notionhq/client';
 import { verify } from 'jsonwebtoken';
+import { ProjectModel } from 'models/projectModel';
 import NextCors from 'nextjs-cors';
 
 const handler = async (req, res) => {
 	await NextCors(req, res, { origin: '*' });
+
 	if (req.method !== 'GET') {
 		return res
 			.status(405)
@@ -27,7 +29,8 @@ const handler = async (req, res) => {
 
 		const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
-		const projects = [];
+		const projects: ProjectModel[] = [];
+
 		let dataQuery;
 
 		if(authData.rol === 'Super Admin') {
@@ -47,28 +50,32 @@ const handler = async (req, res) => {
 			}
 		}
 
+		let response;
+
 		try {
-			const response = await notion.databases.query(dataQuery);
-
-			response.results.map((item: any) => {
-				const project = {
-					name: item.properties['Project Name'].title[0].plain_text,
-					description: item.properties['Description'].rich_text[0].plain_text,
-					client: item.properties['Client'].relation[0].id
-				}
-
-				projects.push(project);
-			})
-
-			res
-				.status(200)
-				.json({projects});
+			response = await notion.databases.query(dataQuery);
 		}
 		catch (error) {
-			res
+			return res
 				.status(400)
-				.json({ message: "Something goes wrong" });
+				.json({ message: "Something goes wrong", error });
 		}
+
+		response.results.map((item: any) => {
+			const project: ProjectModel = {
+				id: item.id,
+				name: item.properties['Name'].title[0].plain_text,
+				description: item.properties['Description'].rich_text[0].plain_text,
+				client: item.properties['Client'].relation[0] ? item.properties['Client'].relation[0].id : null,
+				active: item.properties.Active.checkbox
+			}
+
+			projects.push(project);
+		})
+
+		res
+			.status(200)
+			.json({projects});
 	});
 }
 

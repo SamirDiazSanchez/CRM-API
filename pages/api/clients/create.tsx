@@ -1,5 +1,6 @@
 import { Client } from '@notionhq/client';
 import { verify } from 'jsonwebtoken';
+import { ClientModel } from 'models/clientModel';
 import NextCors from 'nextjs-cors';
 
 const handler = async (req, res) => {
@@ -26,10 +27,12 @@ const handler = async (req, res) => {
 				.json({ message: "Token error" });
 		}
 
+		const client: ClientModel = req.body
+
 		try {
 			const notion = new Client({ auth: process.env.NOTION_API_KEY});
 
-			const response = await notion.pages.create({
+			await notion.pages.create({
 				parent: {
 					database_id: process.env.NOTION_CLIENT_DB
 				},
@@ -38,7 +41,7 @@ const handler = async (req, res) => {
 						title: [
 							{
 								text: {
-									content: req.body.name
+									content: client.name
 								}
 							}
 						]
@@ -47,16 +50,16 @@ const handler = async (req, res) => {
 						rich_text: [
 							{
 								text: {
-									content: req.body.lastName
+									content: client.lastName
 								}
 							}
 						]
 					},
 					Email: {
-						email: req.body.email
+						email: client.email
 					},
 					Phone: {
-						phone_number: req.body.phone
+						phone_number: client.phone
 					},
 					createdUser: {
 						relation: [

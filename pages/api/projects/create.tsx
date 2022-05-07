@@ -1,5 +1,6 @@
 import { Client } from '@notionhq/client';
 import { verify } from 'jsonwebtoken';
+import { ProjectModel } from 'models/projectModel';
 import NextCors from 'nextjs-cors';
 
 const handler = async (req, res) => {
@@ -27,17 +28,19 @@ const handler = async (req, res) => {
 
 		const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
+		const project: ProjectModel = req.body;
+
 		try {
 			const response = await notion.pages.create({
 				parent: {
 					database_id: process.env.NOTION_PROJECT_DB
 				},
 				properties: {
-					"Project Name": {
+					Name: {
 						title: [
 							{
 								text: {
-									content: req.body.projectName
+									content: project.name
 								}
 							}
 						]
@@ -46,7 +49,7 @@ const handler = async (req, res) => {
 						rich_text: [
 							{
 								text: {
-									content: req.body.description
+									content: project.description
 								}
 							}
 						]
@@ -54,7 +57,7 @@ const handler = async (req, res) => {
 					Client: {
 						relation: [
 							{
-								id: req.body.client
+								id: project.client
 							}
 						]
 					},
@@ -73,11 +76,11 @@ const handler = async (req, res) => {
 
 			res
 				.status(201)
-				.json({ message: 'Created' });
+				.json({ message: 'Success' });
 		} catch (error) {
 			res
 				.status(400)
-				.json({ message: "Something goes wrong" });
+				.json({ message: error ? error : "Something goes wrong" });
 		}
 	});
 }

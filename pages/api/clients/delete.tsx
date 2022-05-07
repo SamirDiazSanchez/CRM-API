@@ -1,5 +1,6 @@
 import { Client } from '@notionhq/client';
 import { verify } from 'jsonwebtoken';
+import { ClientModel } from 'models/clientModel';
 import NextCors from 'nextjs-cors';
 
 const handler = async (req, res) => {
@@ -34,9 +35,11 @@ const handler = async (req, res) => {
 				.json({ message: 'Unauthorized' });
 		}
 
+		const client: ClientModel = req.body;
+
 		try {
-			const response = await notion.pages.update({
-				page_id: req.body.id,
+			await notion.pages.update({
+				page_id: client.id,
 				properties: {
 					Active: {
 						checkbox: false
@@ -53,7 +56,7 @@ const handler = async (req, res) => {
 	
 			res
 				.status(200)
-				.json({ response })
+				.json({ message: 'Remove client success' });
 		}
 		catch(error) {
 			res
